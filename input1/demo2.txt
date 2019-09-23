@@ -1,1 +1,1 @@
-"[{'label':'home','address':{'city':'London','zipCode':'12345'}},{'label':'work','address':{'city':'New York','zipCode':'54321'}}]"
+[{"label":"home","address":{"city":"London","zipCode":"111"}},{"label":"work","address":{"city":"New York","zipCode":"11"}}]

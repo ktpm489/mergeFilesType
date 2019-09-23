@@ -2,7 +2,9 @@ var readAllData = require("./utils.js")
 let arrInput = ['input1', 'input2']
 const fs = require('mz/fs')
 var jsonMerger = require("json-merger");
-const { mergeAndReplace }  = require('./mergeFile')
+const {
+    mergeAndReplace
+} = require('./mergeFile')
 async function processData() {
 
     let allFileInput1 = await readAllData.readAllFile(['input1'])
@@ -10,50 +12,44 @@ async function processData() {
     await readAndProcessEachFile(allFileInput1)
 }
 
- async function readAndProcessEachFile(arrFile) {
-     try {
-         for ( var i = 0 ; i <arrFile.length; i++ ) {
-             let currentName = arrFile[i];
-             // load file from input1 folder
-           
-             let file1Data = await fs.readFile(currentName, 'utf8');
-             // load file from input2 folder
-             let file2Data = await fs.readFile(currentName.replace('input1','input2'), 'utf8');
-             let obj = JSON.parse(file1Data).concat(JSON.parse(file2Data))
-             let mergeFileData = jsonMerger.mergeObject(obj)
-            //  let mergeFileData = jsonMerger.mergeFiles([currentName, currentName.replace('input1', 'input2')]);
-             console.log('obj', obj)
-             console.log('mergeFileData', mergeFileData)
-            //  let writeFiles = await fs.writeFile(currentName.replace('input1', 'output'), JSON.stringify(mergeFileData))
-             console.log('file1Data', JSON.parse(file1Data))
-             console.log('file2Data', JSON.parse(file2Data))
-            //  console.log('writeFiles', writeFiles)
-          }
-        
-     }
-     catch (err) { console.error('error link', err) }
-}
+async function readAndProcessEachFile(arrFile) {
+    try {
+        for (var i = 0; i < arrFile.length; i++) {
+            let currentName = arrFile[i];
+            // load file from input1 folder
 
+            let file1Data = await fs.readFile(currentName, 'utf8');
+            // load file from input2 folder
+            let file2Data = await fs.readFile(currentName.replace('input1', 'input2'), 'utf8');
+            let obj = JSON.parse(file1Data).concat(JSON.parse(file2Data))
+            console.log('obj', (obj))
+            // let dataMerge = mergeData(eval((obj)),'label')
+            let dataMerge = mergeData(obj,'label')
+             console.log('dataMerge', dataMerge)
+             let writeFiles = await fs.writeFile(currentName.replace('input1', 'output'), JSON.stringify(dataMerge))
+            // console.log('file1Data', JSON.parse(file1Data))
+            // console.log('file2Data', JSON.parse(file2Data))
+        }
 
-// Merge second object into first
-function merge(set1, set2) {
-    for (var key in set2) {
-        if (set2.hasOwnProperty(key))
-            set1[key] = set2[key]
+    } catch (err) {
+        console.error('error link', err)
     }
-    return set1
 }
 
-// merge(set1, set2)
-
-// Create set from array
-function setify(array) {
-    var result = {}
-    for (var item in array) {
-        if (array.hasOwnProperty(item))
-            result[array[item]] = true
+function mergeData(arr, atr) {
+    console.log(typeof arr,'Is Array', Array.isArray(arr))
+    const result = [];
+    const map = new Map();
+    for (const item of arr) {
+        if (!map.has(item[atr])) {
+            map.set(item[atr], true); // set any value to Map
+            result.push(item);
+        } else {
+            let index = result.findIndex(x => x[atr] === item[atr]);
+            result[index] = item
+        }
     }
-    return result
+    return result;
 }
 
-processData() 
+processData()
